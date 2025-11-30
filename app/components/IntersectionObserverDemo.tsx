@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState, useCallback } from "react";
 
-interface BoxInfo {
+type BoxInfo = {
   id: number;
   ratio: number;
   isIntersecting: boolean;
-}
+};
 
 // Generate threshold array for smooth ratio updates
 function buildThresholdList(): number[] {
