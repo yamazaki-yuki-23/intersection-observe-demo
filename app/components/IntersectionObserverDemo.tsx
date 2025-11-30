@@ -9,7 +9,7 @@ type BoxInfo = {
 };
 
 // Generate threshold array for smooth ratio updates
-function buildThresholdList(): number[] {
+const buildThresholdList = (): number[] => {
   const thresholds: number[] = [];
   const numSteps = 20;
 
@@ -18,18 +18,18 @@ function buildThresholdList(): number[] {
   }
 
   return thresholds;
-}
+};
 
 // Calculate background color based on ratio
-function getBackgroundColor(ratio: number): string {
+const getBackgroundColor = (ratio: number): string => {
   // Transition from blue (not visible) to green (fully visible)
   const r = Math.round(75 - 75 * ratio);
   const g = Math.round(75 + 180 * ratio);
   const b = Math.round(200 - 50 * ratio);
   return `rgb(${r}, ${g}, ${b})`;
-}
+};
 
-export default function IntersectionObserverDemo() {
+const IntersectionObserverDemo = () => {
   const boxRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [boxInfos, setBoxInfos] = useState<BoxInfo[]>(
     Array.from({ length: 8 }, (_, i) => ({
@@ -150,4 +150,6 @@ export default function IntersectionObserverDemo() {
       </footer>
     </div>
   );
-}
+};
+
+export default IntersectionObserverDemo;
