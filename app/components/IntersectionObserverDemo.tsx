@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useRef, useState, useCallback } from 'react';
+import { useState, useCallback } from 'react';
 import { useInView } from 'react-intersection-observer';
 
 type BoxInfo = {
@@ -67,7 +67,6 @@ const Box = ({ id, info, thresholds, onUpdate }: BoxProps) => {
 };
 
 const IntersectionObserverDemo = () => {
-  const boxRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [boxInfos, setBoxInfos] = useState<BoxInfo[]>(
     Array.from({ length: BOX_COUNT }, (_, i) => ({
       id: i,
@@ -86,50 +85,6 @@ const IntersectionObserverDemo = () => {
     },
     []
   );
-
-  const handleIntersection = useCallback(
-    (entries: IntersectionObserverEntry[]) => {
-      setBoxInfos((prev) => {
-        const updated = [...prev];
-        entries.forEach((entry) => {
-          const id = parseInt(entry.target.getAttribute('data-id') || '0', 10);
-          const index = updated.findIndex((info) => info.id === id);
-          if (index !== -1) {
-            updated[index] = {
-              ...updated[index],
-              ratio: entry.intersectionRatio,
-              isIntersecting: entry.isIntersecting,
-            };
-          }
-        });
-        return updated;
-      });
-    },
-    []
-  );
-
-  useEffect(() => {
-    // Create Intersection Observer
-    const options: IntersectionObserverInit = {
-      root: null, // Use viewport as root
-      rootMargin: '0px',
-      threshold: THRESHOLDS, // Multiple thresholds for smooth updates
-    };
-
-    const observer = new IntersectionObserver(handleIntersection, options);
-
-    // Observe all boxes
-    boxRefs.current.forEach((box) => {
-      if (box) {
-        observer.observe(box);
-      }
-    });
-
-    // Cleanup
-    return () => {
-      observer.disconnect();
-    };
-  }, [handleIntersection]);
 
   return (
     <div className="min-h-screen py-8 px-4">
