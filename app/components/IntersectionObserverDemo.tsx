@@ -11,7 +11,7 @@ type BoxInfo = {
 
 const BOX_COUNT = 8;
 
-// Generate threshold array for smooth ratio updates
+// 交差率の更新が滑らかになるようにthresholdを生成する。
 const buildThresholdList = (): number[] => {
   const thresholds: number[] = [];
   const numSteps = 20;
@@ -25,9 +25,9 @@ const buildThresholdList = (): number[] => {
 
 const THRESHOLDS = buildThresholdList();
 
-// Calculate background color based on ratio
+// 交差率に応じて背景色を計算する。
 const getBackgroundColor = (ratio: number): string => {
-  // Transition from blue (not visible) to green (fully visible)
+  // 見えない時は青、完全に見えると緑になるように補間する。
   const r = Math.round(75 - 75 * ratio);
   const g = Math.round(75 + 180 * ratio);
   const b = Math.round(200 - 50 * ratio);
@@ -46,7 +46,7 @@ const Box = ({ id, info, thresholds, onUpdate }: BoxProps) => {
     threshold: thresholds,
     // ブラウザのIntersectionObserverの結果を受け取って状態を更新する。
     onChange: (inView, entry) => {
-      onUpdate(id, entry.intersectionRatio, entry.isIntersecting);
+      onUpdate(id, entry.intersectionRatio, inView);
     },
   });
 
@@ -66,6 +66,7 @@ const Box = ({ id, info, thresholds, onUpdate }: BoxProps) => {
 };
 
 const IntersectionObserverDemo = () => {
+  // 監視結果（交差率・表示状態）を配列で保持する。
   const [boxInfos, setBoxInfos] = useState<BoxInfo[]>(
     Array.from({ length: BOX_COUNT }, (_, i) => ({
       id: i,
@@ -74,6 +75,7 @@ const IntersectionObserverDemo = () => {
     }))
   );
 
+  // Boxからの更新を受けて対応する要素だけを更新する。
   const handleUpdate = useCallback(
     (id: number, ratio: number, isIntersecting: boolean) => {
       setBoxInfos((prev) =>
