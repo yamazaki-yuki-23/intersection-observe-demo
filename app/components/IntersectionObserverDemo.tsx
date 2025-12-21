@@ -76,6 +76,17 @@ const IntersectionObserverDemo = () => {
     }))
   );
 
+  const handleUpdate = useCallback(
+    (id: number, ratio: number, isIntersecting: boolean) => {
+      setBoxInfos((prev) =>
+        prev.map((info) =>
+          info.id === id ? { ...info, ratio, isIntersecting } : info
+        )
+      );
+    },
+    []
+  );
+
   const handleIntersection = useCallback(
     (entries: IntersectionObserverEntry[]) => {
       setBoxInfos((prev) => {
@@ -148,24 +159,14 @@ const IntersectionObserverDemo = () => {
           ↓ スクロールしてください ↓
         </div>
 
-        {boxInfos.map((info, index) => (
-          <div
+        {boxInfos.map((info) => (
+          <Box
             key={info.id}
-            ref={(el) => {
-              boxRefs.current[index] = el;
-            }}
-            data-id={info.id}
-            className="w-64 h-64 rounded-lg shadow-lg flex flex-col items-center justify-center text-white font-bold transition-all duration-100"
-            style={{ backgroundColor: getBackgroundColor(info.ratio) }}
-          >
-            <div className="text-2xl mb-2">Box {info.id + 1}</div>
-            <div className="text-lg">
-              {info.isIntersecting ? '表示中' : '非表示'}
-            </div>
-            <div className="text-sm mt-2">
-              交差率: {Math.round(info.ratio * 100)}%
-            </div>
-          </div>
+            id={info.id}
+            info={info}
+            thresholds={THRESHOLDS}
+            onUpdate={handleUpdate}
+          />
         ))}
 
         {/* Spacer at the bottom */}
