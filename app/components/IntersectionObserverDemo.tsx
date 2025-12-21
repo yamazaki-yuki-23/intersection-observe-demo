@@ -23,6 +23,8 @@ const buildThresholdList = (): number[] => {
   return thresholds;
 };
 
+const THRESHOLDS = buildThresholdList();
+
 // Calculate background color based on ratio
 const getBackgroundColor = (ratio: number): string => {
   // Transition from blue (not visible) to green (fully visible)
@@ -100,7 +102,7 @@ const IntersectionObserverDemo = () => {
     const options: IntersectionObserverInit = {
       root: null, // Use viewport as root
       rootMargin: '0px',
-      threshold: buildThresholdList(), // Multiple thresholds for smooth updates
+      threshold: THRESHOLDS, // Multiple thresholds for smooth updates
     };
 
     const observer = new IntersectionObserver(handleIntersection, options);
