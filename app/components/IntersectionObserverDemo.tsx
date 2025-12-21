@@ -1,6 +1,7 @@
-"use client";
+'use client';
 
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState, useCallback } from 'react';
+import { useInView } from 'react-intersection-observer';
 
 type BoxInfo = {
   id: number;
@@ -29,6 +30,38 @@ const getBackgroundColor = (ratio: number): string => {
   return `rgb(${r}, ${g}, ${b})`;
 };
 
+type BoxProps = {
+  id: number;
+  info: BoxInfo;
+  thresholds: number[];
+  onUpdate: (id: number, ratio: number, isIntersecting: boolean) => void;
+};
+
+const Box = ({ id, info, thresholds, onUpdate }: BoxProps) => {
+  const { ref } = useInView({
+    threshold: thresholds,
+    // ブラウザのIntersectionObserverの結果を受け取って状態を更新する。
+    onChange: (inView, entry) => {
+      onUpdate(id, entry.intersectionRatio, entry.isIntersecting);
+    },
+  });
+
+  return (
+    <div
+      ref={ref}
+      data-id={id}
+      className="w-64 h-64 rounded-lg shadow-lg flex flex-col items-center justify-center text-white font-bold transition-all duration-100"
+      style={{ backgroundColor: getBackgroundColor(info.ratio) }}
+    >
+      <div className="text-2xl mb-2">Box {id + 1}</div>
+      <div className="text-lg">{info.isIntersecting ? '表示中' : '非表示'}</div>
+      <div className="text-sm mt-2">
+        交差率: {Math.round(info.ratio * 100)}%
+      </div>
+    </div>
+  );
+};
+
 const IntersectionObserverDemo = () => {
   const boxRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [boxInfos, setBoxInfos] = useState<BoxInfo[]>(
@@ -44,7 +77,7 @@ const IntersectionObserverDemo = () => {
       setBoxInfos((prev) => {
         const updated = [...prev];
         entries.forEach((entry) => {
-          const id = parseInt(entry.target.getAttribute("data-id") || "0", 10);
+          const id = parseInt(entry.target.getAttribute('data-id') || '0', 10);
           const index = updated.findIndex((info) => info.id === id);
           if (index !== -1) {
             updated[index] = {
@@ -64,7 +97,7 @@ const IntersectionObserverDemo = () => {
     // Create Intersection Observer
     const options: IntersectionObserverInit = {
       root: null, // Use viewport as root
-      rootMargin: "0px",
+      rootMargin: '0px',
       threshold: buildThresholdList(), // Multiple thresholds for smooth updates
     };
 
@@ -86,7 +119,9 @@ const IntersectionObserverDemo = () => {
   return (
     <div className="min-h-screen py-8 px-4">
       <header className="text-center mb-8 sticky top-0 bg-white dark:bg-gray-900 py-4 z-10 shadow-md">
-        <h1 className="text-3xl font-bold mb-2">Intersection Observer API Demo</h1>
+        <h1 className="text-3xl font-bold mb-2">
+          Intersection Observer API Demo
+        </h1>
         <p className="text-gray-600 dark:text-gray-400 mb-4">
           スクロールして、ボックスがビューポートに入ると色が変わります
         </p>
@@ -121,7 +156,7 @@ const IntersectionObserverDemo = () => {
           >
             <div className="text-2xl mb-2">Box {info.id + 1}</div>
             <div className="text-lg">
-              {info.isIntersecting ? "表示中" : "非表示"}
+              {info.isIntersecting ? '表示中' : '非表示'}
             </div>
             <div className="text-sm mt-2">
               交差率: {Math.round(info.ratio * 100)}%
@@ -137,7 +172,7 @@ const IntersectionObserverDemo = () => {
 
       <footer className="text-center mt-8 py-4 text-gray-500 dark:text-gray-400 text-sm">
         <p>
-          参考:{" "}
+          参考:{' '}
           <a
             href="https://developer.mozilla.org/ja/docs/Web/API/Intersection_Observer_API"
             target="_blank"
