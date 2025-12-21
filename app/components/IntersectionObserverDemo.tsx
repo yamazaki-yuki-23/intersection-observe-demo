@@ -37,13 +37,12 @@ const getBackgroundColor = (ratio: number): string => {
 type BoxProps = {
   id: number;
   info: BoxInfo;
-  thresholds: number[];
   onUpdate: (id: number, ratio: number, isIntersecting: boolean) => void;
 };
 
-const Box = ({ id, info, thresholds, onUpdate }: BoxProps) => {
+const Box = ({ id, info, onUpdate }: BoxProps) => {
   const { ref } = useInView({
-    threshold: thresholds,
+    threshold: THRESHOLDS,
     // ブラウザのIntersectionObserverの結果を受け取って状態を更新する。
     onChange: (inView, entry) => {
       onUpdate(id, entry.intersectionRatio, inView);
@@ -116,13 +115,7 @@ const IntersectionObserverDemo = () => {
         </div>
 
         {boxInfos.map((info) => (
-          <Box
-            key={info.id}
-            id={info.id}
-            info={info}
-            thresholds={THRESHOLDS}
-            onUpdate={handleUpdate}
-          />
+          <Box key={info.id} id={info.id} info={info} onUpdate={handleUpdate} />
         ))}
 
         {/* Spacer at the bottom */}
