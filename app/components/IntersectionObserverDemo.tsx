@@ -53,7 +53,6 @@ const Box = ({ id, info, thresholds, onUpdate }: BoxProps) => {
   return (
     <div
       ref={ref}
-      data-id={id}
       className="w-64 h-64 rounded-lg shadow-lg flex flex-col items-center justify-center text-white font-bold transition-all duration-100"
       style={{ backgroundColor: getBackgroundColor(info.ratio) }}
     >
