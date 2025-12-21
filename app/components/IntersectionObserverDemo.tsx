@@ -9,6 +9,8 @@ type BoxInfo = {
   isIntersecting: boolean;
 };
 
+const BOX_COUNT = 8;
+
 // Generate threshold array for smooth ratio updates
 const buildThresholdList = (): number[] => {
   const thresholds: number[] = [];
@@ -65,7 +67,7 @@ const Box = ({ id, info, thresholds, onUpdate }: BoxProps) => {
 const IntersectionObserverDemo = () => {
   const boxRefs = useRef<(HTMLDivElement | null)[]>([]);
   const [boxInfos, setBoxInfos] = useState<BoxInfo[]>(
-    Array.from({ length: 8 }, (_, i) => ({
+    Array.from({ length: BOX_COUNT }, (_, i) => ({
       id: i,
       ratio: 0,
       isIntersecting: false,
