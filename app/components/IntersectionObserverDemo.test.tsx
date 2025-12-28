@@ -1,15 +1,17 @@
-import { render, screen } from '@testing-library/react';
+import { act, render, screen } from '@testing-library/react';
+import { useInView } from 'react-intersection-observer';
 import IntersectionObserverDemo from './IntersectionObserverDemo';
 
 jest.mock('react-intersection-observer', () => ({
-  useInView: jest.fn(() => ({
-    ref: jest.fn(),
-  })),
+  useInView: jest.fn(),
 }));
 
 describe('IntersectionObserverDemo', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    (useInView as jest.Mock).mockImplementation(() => ({
+      ref: jest.fn(),
+    }));
   });
 
   it('renders the header with title', () => {
@@ -46,6 +48,31 @@ describe('IntersectionObserverDemo', () => {
     for (let i = 1; i <= 8; i++) {
       expect(screen.getByText(`Box ${i}: 0%`)).toBeInTheDocument();
     }
+  });
+
+  it('updates box state when useInView reports intersection changes', () => {
+    type OnChange = (inView: boolean, entry: IntersectionObserverEntry) => void;
+    let capturedOnChange: OnChange | null = null;
+
+    (useInView as jest.Mock).mockImplementationOnce(
+      (options: { onChange?: OnChange }) => {
+        capturedOnChange = options?.onChange ?? null;
+        return { ref: jest.fn() };
+      }
+    );
+
+    render(<IntersectionObserverDemo />);
+
+    expect(capturedOnChange).not.toBeNull();
+    act(() => {
+      capturedOnChange?.(true, {
+        intersectionRatio: 0.5,
+      } as IntersectionObserverEntry);
+    });
+
+    expect(screen.getByText('表示中')).toBeInTheDocument();
+    expect(screen.getByText('Box 1: 50%')).toBeInTheDocument();
+    expect(screen.getAllByText('非表示')).toHaveLength(7);
   });
 
   it('renders scroll helper text', () => {
